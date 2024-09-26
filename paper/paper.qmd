@@ -2,8 +2,8 @@
 title: "Fire Incident Analysis"
 subtitle: "Exploring Toronto Fire Incident Data"
 author: 
-  - Bruce Yu
-thanks: "Code and data are available at: LINK."
+  - Qisheng Yu
+thanks: "Code and data are available at: https://github.com/qishengyu/Fire-Incident-Analysis"
 date: today
 date-format: long
 abstract: "In this paper, we analyze fire incident data in Toronto to identify patterns and relationships between response times, estimated losses, and various incident characteristics. Using visualization techniques, we provide insights into key metrics such as incident type, response time, and resource allocation."
@@ -23,35 +23,76 @@ cleaned_data <- read_csv("../data/cleaned_data/fire_incidents_cleaned.csv")
 ```
 
 
+
 # Introduction
 
 Fire safety is a critical concern in urban environments, where the density of buildings and population heightens the risks of fire-related incidents. In major cities like Toronto, understanding the dynamics of fire incidents, response times, and the associated economic losses is essential for policymakers and emergency responders to optimize their strategies. Although fire department interventions and fire alarm systems are in place to mitigate risks, there is a need for data-driven analyses that shed light on how these factors interact and impact overall fire safety outcomes.
 
-This paper focuses on the analysis of fire incidents in Toronto, drawing from a dataset provided by the City of Toronto’s Open Data initiative. The dataset contains detailed records of fire incidents, response times, estimated financial losses, and fire alarm system statuses. Previous studies have largely focused on the importance of timely responses and fire alarm systems in minimizing fire damage. However, there remains a gap in quantifying the direct relationship between response times, fire alarm presence, and the financial impact of fire incidents. Additionally, little attention has been given to spatial disparities in fire incidents across different areas of the city, particularly how station areas might experience varying frequencies of incidents.
+In this paper, we analyze fire incidents in Toronto using data obtained from the City of Toronto [@toronto-fire-incidents]. Our analysis was conducted using R [@R-base], a robust tool for statistical computing. This paper focuses on the analysis of fire incidents in Toronto, drawing from a dataset provided by the City of Toronto’s Open Data initiative. The dataset contains detailed records of fire incidents, response times, estimated financial losses, and fire alarm system statuses. Previous studies have largely focused on the importance of timely responses and fire alarm systems in minimizing fire damage. However, there remains a gap in quantifying the direct relationship between response times, fire alarm presence, and the financial impact of fire incidents. Additionally, little attention has been given to spatial disparities in fire incidents across different areas of the city, particularly how station areas might experience varying frequencies of incidents.
 
 To address these gaps, we conducted a comprehensive analysis of fire incidents in Toronto, examining how response times and the presence of fire alarm systems influence the financial losses incurred from fires. We also explored the distribution of fire incidents across different station areas, seeking to identify regions with higher fire risks. Using statistical methods, we visualized the distributions and relationships between key variables such as response times, estimated financial losses, and fire alarm system efficacy.
 
 Our findings suggest that, while shorter response times generally correlate with lower estimated losses, there are notable exceptions, especially in incidents where fire alarms were either absent or ineffective. Certain station areas also exhibited higher frequencies of fire incidents, indicating possible regional risk factors that warrant further investigation. These insights are critical for enhancing fire safety protocols, particularly in resource allocation and public awareness campaigns targeting fire alarm installations.
 
-The remainder of the paper is structured as follows. Section 2 provides a detailed overview of the dataset, including its source, key variables, and any preprocessing steps. Section 3 presents the results of our analyses, including visualizations of response times, estimated losses, and station area distributions. Section 4 discusses the implications of these findings, particularly in relation to policy and future research. Finally, Section 5 offers concluding remarks and suggests potential next steps for improving fire safety measures based on our findings.
-
-The introduction is self-contained and tellsa reader everything they need to knowincluding: 1) broader context to motivate;2) some detail about what the paper isabout; 3) a clear gap that needs to befilled; 4) what was done; 5) what wasfound; 6) why it is important; 7) thestructure of the paper. A reader should beable to read only the introduction andknow what was done, why, and what wasfound. Likely 3 or 4 paragraphs, or 10 percent of total.
-
-The remainder of this paper is structured as follows. @sec-data provides a detailed description of the data used. In @sec-results, we visualize the results, and @sec-discussion discusses the findings.
-
-
 # Data {#sec-data}
 
-The dataset used in this analysis contains over 32,000 records from Toronto fire incidents. It includes various features such as response times, estimated losses, number of responding units, presence of fire alarms, and more. Each fire incident is categorized by incident type, and there are records for both civilian and firefighter casualties.
+The dataset used in this analysis contains over 32,000 records from Toronto fire incidents. It includes various features such as response times, estimated losses, number of responding units, presence of fire alarms, and more. Each fire incident is categorized by incident type, and there are records for both civilian and firefighter casualties. We used the R programming language [@R-base] to process the data and create visualizations using ggplot2 [@ggplot2]. 
+
+## Variables
+
+Each row in the dataset represents an individual fire incident, and the following variables are of particular importance in the analysis:
+
+Incident_ID: A unique identifier assigned to each fire incident.
+
+Incident_Type: The classification of the fire incident, indicating whether it was a structural fire, a vehicle fire, or another type of incident.
+
+Response_Time (minutes): The time taken from the moment the alarm was raised until the first fire response unit arrived on the scene. This is a key measure of the efficiency of emergency services.
+
+Estimated_Loss ($): The estimated monetary loss resulting from the fire, reported in Canadian dollars. This includes damages to property, belongings, and other assets.
+
+Civilian_Casualties: The number of civilian casualties (injuries or deaths) associated with the fire.
+
+Firefighter_Casualties: The number of firefighter casualties (injuries or deaths) that occurred during the response to the fire.
+
+Persons_Rescued: The number of individuals rescued during the incident.
+
+Fire_Alarm_Operation: A categorical variable indicating whether the fire alarm system functioned during the incident (e.g., "Yes", "No", "Unknown").
+
+Fire_Alarm_Presence: Indicates whether a fire alarm system was present in the building or area where the fire occurred.
+
+Area_of_Origin: The location within the building where the fire started (e.g., "Kitchen", "Living Room", "Garage").
+
+Extent_of_Fire: A categorical variable representing the extent to which the fire spread (e.g., "Confined to object of origin", "Spread beyond room of origin").
+
+Incident_Station_Area: The fire station area responsible for responding to the fire.
+
+Incident_Ward: The Toronto ward where the incident occurred, providing geographic context.
+
+Latitude and Longitude: Geospatial data points indicating the exact location of the incident.
+
+Responding_Units: The number of firefighting units (e.g., trucks or apparatus) that responded to the incident.
+
+Responding_Personnel: The number of firefighting personnel who responded to the incident.
+
+## Data Cleaning Process
+Before analyzing the data, a comprehensive cleaning process was performed to ensure that the dataset was suitable for analysis. The key steps taken during this process are as follows:
+
+Handling Missing Values: Several variables, such as Response_Time and Estimated_Loss, contained missing or NA values. For numerical variables, missing values were imputed with the median value of the variable where appropriate. For categorical variables, missing data were handled by categorizing them as "Unknown" or "Not Available".
+
+Outlier Detection and Treatment: In variables such as Response_Time and Estimated_Loss, extreme values were identified as potential outliers. For example, some incidents reported extremely high response times or losses that could distort the analysis. These outliers were treated by limiting the scale of visualizations to focus on the central tendency of the data, though no data points were removed during the cleaning process.
+
+Data Transformation: The Response_Time variable was converted into numeric format where necessary to allow for proper visualization and statistical analysis. Similarly, Incident_Ward and Incident_Station_Area were transformed into factors to support categorical analysis.
 
 The following sections explore different aspects of this dataset using various visualization techniques.
 
+## Data Analysis
 ### Distribution of Response Time
-
-The distribution of response times for fire incidents is shown in @fig-response-time. The majority of incidents have response times between 4 and 6 minutes, with a few incidents having much longer response times.
 
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
 #| label: fig-response-time
 #| fig-cap: "Distribution of Response Time"
 ggplot(cleaned_data, aes(x = Response_Time)) +
@@ -60,10 +101,17 @@ ggplot(cleaned_data, aes(x = Response_Time)) +
   theme_minimal()
 ```
 
-## Distribution of Estimated Loss
-The distribution of estimated loss for fire incidents is highly skewed, as shown in @fig-estimated-loss. Most incidents report estimated losses below $5,000, though a small number of incidents have significantly higher losses, up to $50,000 or more.
+
+The distribution of response times for fire incidents is shown in @fig-response-time. The majority of incidents have response times between 4 and 6 minutes, with a few incidents having much longer response times.
+
+
+### Distribution of Estimated Loss
+
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
 #| label: fig-estimated-loss
 #| fig-cap: "Distribution of Estimated Loss"
 ggplot(cleaned_data, aes(x = Estimated_Loss)) +
@@ -72,10 +120,14 @@ ggplot(cleaned_data, aes(x = Estimated_Loss)) +
   theme_minimal()
 ```
 
+The distribution of estimated loss for fire incidents is highly skewed, as shown in @fig-estimated-loss. Most incidents report estimated losses below $5,000, though a small number of incidents have significantly higher losses, up to $50,000 or more.
+
 ## Response Time by Incident Type
-To examine how response times vary across different types of incidents, we plotted a boxplot of response times grouped by incident type in @fig-response-incident-type. It shows that the median response time is relatively similar across most incident types, with a few outliers where response times are much longer.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
 #| label: fig-response-incident-type
 #| fig-cap: "Response Time by Incident Type"
 # Simplify the Incident_Type column
@@ -93,14 +145,16 @@ ggplot(cleaned_data, aes(x = Incident_Type_Simplified, y = Response_Time)) +
   labs(title = "Response Time by Incident Type", x = "Incident Type", y = "Response Time (minutes)") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-
 ```
 
+To examine how response times vary across different types of incidents, we plotted a boxplot of response times grouped by incident type in @fig-response-incident-type. It shows that the median response time is relatively similar across most incident types, with a few outliers where response times are much longer.
+
 ## Response Time vs Estimated Loss
-We also explored the relationship between response time and estimated loss. The scatter plot in @fig-response-estimated-loss suggests that there is a weak positive correlation between response time and estimated loss. However, the trend is not strong, and there are a large number of incidents with zero or low losses regardless of response time.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
 #| label: fig-response-estimated-loss
 #| fig-cap: "Response Time vs Estimated Loss"
 ggplot(cleaned_data, aes(x = Response_Time, y = Estimated_Loss)) +
@@ -111,15 +165,14 @@ ggplot(cleaned_data, aes(x = Response_Time, y = Estimated_Loss)) +
 
 ```
 
+We also explored the relationship between response time and estimated loss. The scatter plot in @fig-response-estimated-loss suggests that there is a weak positive correlation between response time and estimated loss. However, the trend is not strong, and there are a large number of incidents with zero or low losses regardless of response time.
 
 ## Number of Fire Incidents by Station Area
-The number of fire incidents by station area is visualized in @fig-fire-incidents-station-area. The bar plot shows the number of fire incidents by station area, with the station areas segmented into four distinct groups on the x-axis (around 100, 200, 300, and 400). Each group represents different geographic regions or station numbers in the dataset.
-
-Station areas in the 300 range show the highest density of fire incidents, with several exceeding 750 incidents. This might indicate that these regions are more populated or prone to higher fire risks.
-Other station areas (around 100, 200, and 400) also see fire incidents, but their distribution is less dense compared to the 300 series.
-The clustering of incidents around certain station areas could be driven by multiple factors, such as population density, industrial areas, or geographical layouts prone to fire hazards. Further investigation is needed to determine whether these station areas correspond to specific urban or suburban regions.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
 #| label: fig-fire-incidents-station-area
 #| fig-cap: "Number of Fire Incidents by Station Area"
 # Remove rows with non-finite values in the Incident_Station_Area column
@@ -136,10 +189,19 @@ ggplot(cleaned_data_filtered, aes(x = Incident_Station_Area)) +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
+
+The number of fire incidents by station area is visualized in @fig-fire-incidents-station-area. The bar plot shows the number of fire incidents by station area, with the station areas segmented into four distinct groups on the x-axis (around 100, 200, 300, and 400). Each group represents different geographic regions or station numbers in the dataset.
+
+Station areas in the 300 range show the highest density of fire incidents, with several exceeding 750 incidents. This might indicate that these regions are more populated or prone to higher fire risks.
+Other station areas (around 100, 200, and 400) also see fire incidents, but their distribution is less dense compared to the 300 series.
+The clustering of incidents around certain station areas could be driven by multiple factors, such as population density, industrial areas, or geographical layouts prone to fire hazards. Further investigation is needed to determine whether these station areas correspond to specific urban or suburban regions.
+
 ## Responding Units vs Estimated Loss
-The relationship between the number of responding units and estimated loss is shown in @fig-responding-units-loss. There appears to be a positive correlation between the number of units and the estimated loss, which may indicate that larger incidents with higher estimated losses require more resources.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
 #| label: fig-responding-units-loss
 #| fig-cap: "Responding Units vs Estimated Loss"
 ggplot(cleaned_data, aes(x = Responding_Units, y = Estimated_Loss)) +
@@ -151,6 +213,7 @@ ggplot(cleaned_data, aes(x = Responding_Units, y = Estimated_Loss)) +
 
 ```
 
+The relationship between the number of responding units and estimated loss is shown in @fig-responding-units-loss. There appears to be a positive correlation between the number of units and the estimated loss, which may indicate that larger incidents with higher estimated losses require more resources.
 
 # References
 
