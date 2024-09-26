@@ -10,7 +10,7 @@ This repo provides students with a foundation for their own projects associated 
 The repo is organized as follows:
 
 - `data/raw_data/`: Contains the raw data as obtained from the Toronto Open Data Portal. The original dataset is `Fire Incidents Data`.
-- `data/analysis_data/`: Contains the cleaned and processed dataset used for analysis. This includes the transformations and filtering steps applied to the raw data.
+- `data/clean_data/`: Contains the cleaned dataset used for analysis. 
 - `scripts/`: Contains R scripts used to simulate, download, clean, and visualize the data. The scripts include:
   - `00-simulate_data.R`: Generates simulated data for initial analysis.
   - `01-download_data.R`: Downloads the actual fire incidents data from the Toronto Open Data Portal.
